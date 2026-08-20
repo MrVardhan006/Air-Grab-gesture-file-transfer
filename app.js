@@ -195,10 +195,27 @@ async function handleSignal(data) {
 // gesture doesn't count as user activation. So: click once to grant access,
 // then the fist/open-palm gestures just enable/disable the already-granted
 // track, which IS allowed without a fresh click.
+//
+// Platform reality check: getDisplayMedia (screen capture) is a desktop-only
+// web API — iOS Safari and Android Chrome don't implement it at all, on any
+// browser, as of 2026. That's an Apple/Google platform restriction, not
+// something fixable from here. Phones can still *receive* a shared screen
+// (playing video works everywhere) — they just can't be the one sharing.
 let pendingScreenStream = null;
 let screenSharingActive = false;
 
+const screenShareSupported = !!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia);
+if (!screenShareSupported) {
+  grantScreenBtn.disabled = true;
+  grantScreenBtn.textContent = '🖥️ Screen share not available on this device';
+  screenshareStatus.textContent =
+    'Mobile browsers (iOS Safari, Android Chrome) don\u2019t support sharing your screen — ' +
+    'that\u2019s an OS/browser restriction, not a bug here. You can still receive a shared screen from a desktop, ' +
+    'and file grab/drop works fully on this device.';
+}
+
 grantScreenBtn.addEventListener('click', async () => {
+  if (!screenShareSupported) return;
   try {
     pendingScreenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
     screenshareStatus.textContent = 'Access granted — make a fist to start sharing, open your hand to pause.';
