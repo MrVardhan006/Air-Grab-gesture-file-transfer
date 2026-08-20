@@ -86,6 +86,21 @@ On each device: open the URL → allow camera access → enter the same room
 code → pick a file → close your hand into a fist to grab it → on the other
 device, open your hand to catch it (a save link appears).
 
+## Device compatibility
+
+| Combo | File grab/drop | Screen share ("watch together") |
+|---|---|---|
+| Mac ↔ Mac (or any desktop) | ✅ | ✅ both ways |
+| Desktop ↔ phone | ✅ | ✅ desktop → phone only |
+| Phone ↔ phone (iOS/Android, any mix) | ✅ | ❌ neither side can share |
+
+**Why:** file transfer only needs the camera (`getUserMedia`), which every
+modern browser supports. Screen sharing needs `getDisplayMedia`, which is a
+**desktop-only web API** — iOS Safari and Android Chrome don't implement it
+on any browser, as a platform-level restriction from Apple/Google, not
+something this app can work around. A phone can still *watch* a screen
+shared from a desktop; it just can't be the one sharing its own screen.
+
 ## Known limitations (and how you'd extend this)
 
 - **No TURN server**: the WebRTC connection uses a public STUN server, which
