@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Air Grab — gesture file transfer</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>🖐️ Air Grab</h1>
+    <p class="tagline">Grab a file — or your live screen — with a fist. Drop it on another screen.</p>
+  </header>
+
+  <main>
+    <!-- STEP 1: pairing -->
+    <section id="pairing-screen" class="card">
+      <h2>1. Pair your devices</h2>
+      <p>Type the same room code on every device you want connected — laptop, phone, tablet, doesn't matter.</p>
+      <input id="room-code" placeholder="e.g. sunset-42" autocomplete="off" />
+      <input id="device-name" placeholder="Name this device (e.g. My Phone)" autocomplete="off" />
+      <button id="join-btn">Join room</button>
+      <div id="peer-status" class="muted"></div>
+    </section>
+
+    <!-- STEP 2: gesture area -->
+    <section id="gesture-screen" class="card hidden">
+      <h2>2. Grab &amp; drop</h2>
+      <div class="video-wrap">
+        <video id="webcam" autoplay playsinline muted></video>
+        <canvas id="overlay"></canvas>
+        <div id="hand-state" class="hand-state">watching for your hand…</div>
+      </div>
+
+      <div class="controls">
+        <label class="file-picker">
+          📎 Choose a file to arm
+          <input type="file" id="file-input" hidden />
+        </label>
+        <span id="armed-file" class="muted">No file armed yet</span>
+      </div>
+
+      <ol class="howto">
+        <li><strong>Choose a file</strong> above.</li>
+        <li><strong>Close your open hand into a fist</strong> in front of the camera to "grab" it.</li>
+        <li>On the <em>other</em> device, <strong>open your closed fist</strong> in front of its camera to "catch" it.</li>
+      </ol>
+
+      <div id="transfer-log" class="log"></div>
+    </section>
+
+    <!-- STEP 3: watch-together / live screen mirror -->
+    <section id="screenshare-screen" class="card hidden">
+      <h2>3. Watch together (live screen mirror)</h2>
+      <p class="muted">
+        One-time click to grant screen access — after that, a fist starts
+        streaming your screen live, an open palm pauses it. No more clicking needed.
+      </p>
+      <button id="grant-screen-btn">🖥️ Grant screen access</button>
+      <div id="screenshare-status" class="muted">not granted yet</div>
+
+      <div class="video-wrap remote">
+        <video id="remote-video" autoplay playsinline></video>
+        <div id="remote-placeholder" class="hand-state">nothing shared yet</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span id="connection-dot" class="dot offline"></span>
+    <span id="connection-label">not connected</span>
+  </footer>
+
+  <!-- MediaPipe Hands for gesture detection -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+
+  <script src="app.js"></script>
+</body>
+</html>

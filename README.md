@@ -112,13 +112,17 @@ device, open your hand to catch it (a save link appears).
 ## File structure
 
 ```
-gesture-transfer/
-├── server.js           # WebSocket signaling server (pairing + WebRTC relay)
-├── streamlit_app.py     # Streamlit wrapper that serves the client, pointing at server.js
-├── requirements.txt      # Python deps for streamlit_app.py
+gesture-transfer/  (flat layout — no public/ subfolder)
+├── server.js          # WebSocket signaling server (pairing + WebRTC relay), serves the root as static files
+├── streamlit_app.py    # Streamlit wrapper that serves the client, pointing at server.js
+├── requirements.txt     # Python deps for streamlit_app.py
 ├── package.json
-└── public/
-    ├── index.html       # UI shell
-    ├── style.css
-    └── app.js            # pairing, WebRTC, MediaPipe gesture detection, file chunking
+├── index.html           # UI shell
+├── style.css
+└── app.js               # pairing, WebRTC, MediaPipe gesture detection, file chunking
 ```
+
+> Note: because `server.js` serves the whole repo folder as static files, anyone
+> who visits your deployed URL can also download `server.js`, `package.json`,
+> etc. — harmless for a demo, but if that bothers you, move the front-end
+> files into a `public/` folder and point `express.static()` at that instead.
