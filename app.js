@@ -50,6 +50,7 @@ function setConnected(isConnected, label) {
 let ws;
 let deviceName;
 let roomCode;
+let remotePeerName = 'the other device';
 
 function connectSignaling() {
   const url = window.SIGNALING_SERVER_URL
@@ -68,11 +69,13 @@ function connectSignaling() {
         peerStatus.textContent = msg.peers.length
           ? `Connected to room. Already here: ${msg.peers.join(', ')}`
           : 'Waiting for another device to join this room…';
+        if (msg.peers.length > 0) remotePeerName = msg.peers[0];
         // If someone was already here, we initiate the WebRTC offer.
         if (msg.peers.length > 0) startPeerConnection(true);
         break;
       case 'peer-joined':
         peerStatus.textContent = `${msg.deviceName} joined. Connecting…`;
+        remotePeerName = msg.deviceName;
         // The newcomer initiates; we just wait for their offer.
         if (!pc) startPeerConnection(false);
         break;
@@ -126,6 +129,7 @@ function startPeerConnection(isInitiator) {
   pc.ontrack = (e) => {
     remoteVideo.srcObject = e.streams[0];
     remotePlaceholder.classList.add('hidden');
+    screenshareStatus.textContent = `Watching ${remotePeerName}'s screen live.`;
   };
 
   // Whenever tracks are added/removed (e.g. we grant screen access), renegotiate automatically
@@ -250,7 +254,7 @@ function sendArmedFile() {
   }
 
   const file = armedFile;
-  log(`Grabbed "${file.name}" — hold your fist near the other device, then open your hand there to drop it.`);
+  log(`Grabbed "${file.name}" — sending to ${remotePeerName}. Have them open their hand to catch it.`);
 
   // Announce the incoming file so the receiving device knows what to expect
   dataChannel.send(JSON.stringify({ kind: 'meta', name: file.name, size: file.size, mime: file.type }));
@@ -284,7 +288,7 @@ function handleIncomingChunk(data) {
       incomingFileMeta = msg;
       incomingChunks = [];
       incomingBytesReceived = 0;
-      log(`Incoming file: "${msg.name}" (${(msg.size / 1024).toFixed(0)} KB) — open your hand to catch it.`);
+      log(`Incoming file from ${remotePeerName}: "${msg.name}" (${(msg.size / 1024).toFixed(0)} KB) — open your hand to catch it.`);
     } else if (msg.kind === 'end') {
       finishIncomingFile();
     }
