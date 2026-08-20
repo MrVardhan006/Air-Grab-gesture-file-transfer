@@ -15,7 +15,6 @@ import json
 from pathlib import Path
 
 import streamlit as st
-import streamlit.components.v1 as components
 
 st.set_page_config(page_title="Air Grab", page_icon="🖐️", layout="centered")
 
@@ -50,7 +49,7 @@ css = (BASE_DIR / "style.css").read_text()
 js = (BASE_DIR / "app.js").read_text()
 
 # Strip the external <link>/<script src> tags from index.html and inline
-# everything into one document — simplest way to embed via components.html.
+# everything into one document — simplest way to embed via st.iframe.
 body = html.split("<body>", 1)[1].split("</body>", 1)[0]
 body = "\n".join(
     line for line in body.splitlines()
@@ -72,7 +71,7 @@ embedded_page = f"""
 </script>
 """
 
-components.html(embedded_page, height=1000, scrolling=True)
+st.iframe(embedded_page, height=1000)
 
 st.divider()
 st.caption(
